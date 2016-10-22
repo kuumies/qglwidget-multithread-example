@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- *
-   Author: Antti Jumpponen <kuumies@gmail.com>
+   Author: Kuumies <kuumies@gmail.com>
    Desc:   Implementation of kuu::opengl::Widget class.
  * ---------------------------------------------------------------- */
 

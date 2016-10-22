@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- *
-   Author: Antti Jumpponen <kuumies@gmail.com>
+   Author: Kuumies <kuumies@gmail.com>
    Desc:   Definition of kuu::opengl::Quad class.
  * ---------------------------------------------------------------- */
 

@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- *
-   Author: Antti Jumpponen <kuumies@gmail.com>
+   Author: Kuumies <kuumies@gmail.com>
    Desc:   Implmentation of kuu::opengl::Quad class.
  * ---------------------------------------------------------------- */
 
@@ -240,7 +240,7 @@ struct Quad::Data
 };
 
 /* ---------------------------------------------------------------- *
-   Constructs the quad.
+   Constructs the quad from the width and height dimensions.
  * -----------------------------------------------------------------*/
 Quad::Quad(float width, float height)
     : d(std::make_shared<Data>(width, height))

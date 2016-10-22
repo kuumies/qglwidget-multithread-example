@@ -1,5 +1,5 @@
 /* -----------------------------------------------------------------*
-    Author: Antti Jumpponen <kuumies@gmail.com>
+    Author: Kuumies <kuumies@gmail.com>
     Desc:   Definition of GLWidget multithread example main entry.
  * -----------------------------------------------------------------*/
 

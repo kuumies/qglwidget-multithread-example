@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- *
-   Author: Antti Jumpponen <kuumies@gmail.com>
+   Author: Kuumies <kuumies@gmail.com>
    Desc:   Includes OpenGL header that allows usage of OpenGL 3.0.
  * ---------------------------------------------------------------- */
 

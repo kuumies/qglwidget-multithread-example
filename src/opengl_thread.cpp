@@ -1,5 +1,5 @@
 /* ---------------------------------------------------------------- *
-   Author: Antti Jumpponen <kuumies@gmail.com>
+   Author: Kuumies <kuumies@gmail.com>
    Desc:   Implmentation of kuu::opengl::Thread class.
  * ---------------------------------------------------------------- */
 
@@ -104,7 +104,7 @@ void Thread::stop()
 
 /* ---------------------------------------------------------------- *
    Runs the OpenGL rendering until the user stops it by calling
-   stop() or the widget pointer goes to nullptr. If the operating
+   stop() or the widget pointer goes invalid. If the operating
    system is Windows then the GLEW is initialized before rendering.
 * ---------------------------------------------------------------- */
 void Thread::run()
