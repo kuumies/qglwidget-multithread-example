@@ -4,8 +4,8 @@
  * ---------------------------------------------------------------- */
 
 #include "opengl_thread.h"
-#include <chrono>
 #include <iostream>
+#include "opengl_quad.h"
 
 namespace kuu
 {
@@ -62,16 +62,10 @@ void Thread::stop()
    Runs the OpenGL rendering until the user stops it by calling
    stop() or the widget pointer goes to nullptr. If the operating
    system is Windows then the GLEW is initialized before rendering.
-
-   The rendering will just change the background clear color.
-   TODO: render a rotating quad
 * ---------------------------------------------------------------- */
 void Thread::run()
 {
-    using namespace std::chrono;
-    time_point<steady_clock> startClock = steady_clock::now();
-    float r = 0.0f, g = 0.0, b = 0.0f;
-    bool rNeg= false, gNeg = false, bNeg = false;
+    Quad::Ptr quad;
 
     // Render untill the thread is stopped or widget is deleted.
     while(d->render)
@@ -97,42 +91,21 @@ void Thread::run()
                 return;
             }
 #endif
+            quad = std::make_shared<Quad>();
             d->initialized = true;
         }
 
         // Clear the color buffer
-        glClearColor(r, g, b, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glViewport(0, 0, 720, 576);
+        glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        // Render the quad
+        quad->render();
 
         // Swap buffers and we're done.
         widget->swapBuffers();
         widget->doneCurrent();
-
-        time_point<steady_clock> endClock = steady_clock::now();
-
-        const int elapsed =
-            std::chrono::duration_cast<std::chrono::milliseconds>(
-                endClock - startClock).count();
-         startClock = endClock;
-
-        const float rChangePerSecond = 0.12f;
-        const float rChange = rChangePerSecond * elapsed / 1000.0f;
-        const float gChangePerSecond = 0.13f;
-        const float gChange = gChangePerSecond * elapsed / 1000.0f;
-        const float bChangePerSecond = 0.14f;
-        const float bChange = bChangePerSecond * elapsed / 1000.0f;
-
-        // Adjust the color components to see that the thread
-        // really is running.
-        r = rNeg ? r - rChange : r + rChange;
-        g = gNeg ? g - gChange : g + gChange;
-        b = gNeg ? b - bChange : b + bChange;
-        if (r > 1.0f) rNeg = !rNeg;
-        if (r < 0.0f) rNeg = !rNeg;
-        if (g > 1.0f) gNeg = !gNeg;
-        if (g < 0.0f) gNeg = !gNeg;
-        if (b > 1.0f) bNeg = !bNeg;
-        if (b < 0.0f) bNeg = !bNeg;
     }
 }
 

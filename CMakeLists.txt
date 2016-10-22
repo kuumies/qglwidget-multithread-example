@@ -44,6 +44,7 @@ QT5_ADD_RESOURCES(RCC_RESOURCES
 SET(SOURCE
     src/main.cpp
     src/opengl.h
+    src/opengl_quad.cpp
     src/opengl_thread.cpp
     src/opengl_widget.cpp
 )
