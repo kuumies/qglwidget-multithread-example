@@ -7,6 +7,8 @@
 
 #include <memory>
 
+class QMatrix4x4;
+
 namespace kuu
 {
 namespace opengl
@@ -28,7 +30,8 @@ public:
     void update(float elapsed);
 
     // Renders the quad
-    void render();
+    void render(const QMatrix4x4& view,
+                const QMatrix4x4& projection);
 
 private:
     struct Data;

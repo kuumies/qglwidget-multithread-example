@@ -180,7 +180,8 @@ struct Quad::Data
         glDeleteProgram(pgm);
     }
 
-    void drawQuad()
+    void drawQuad(const QMatrix4x4& view,
+                  const QMatrix4x4& projection)
     {
         glEnable(GL_DEPTH_TEST);
         glDisable(GL_CULL_FACE);
@@ -214,11 +215,6 @@ struct Quad::Data
             return;
         }
 
-        QMatrix4x4 projection, view;
-        projection.setToIdentity();
-        projection.perspective(45.0f, 1.0f, 0.1f, 100.0f);
-        view.setToIdentity();
-        view.translate(0.0f, 0.0f, -5.0f);
         QMatrix4x4 model;
         model.rotate(yaw, 0.0f, 1.0f, 0.0f);
         QMatrix4x4 camera = projection * view * model;
@@ -265,9 +261,10 @@ void Quad::update(float elapsed)
 /* ---------------------------------------------------------------- *
    Renders the quad.
  * -----------------------------------------------------------------*/
-void Quad::render()
+void Quad::render(const QMatrix4x4& view,
+                  const QMatrix4x4& projection)
 {
-    d->drawQuad();
+    d->drawQuad(view, projection);
 }
 
 } // namespace opengl

@@ -5,6 +5,7 @@
 
 #include "opengl_thread.h"
 #include <iostream>
+#include <QtGui/QMatrix4x4>
 #include "opengl_quad.h"
 
 namespace kuu
@@ -54,11 +55,15 @@ struct Thread::Data
         : openglWidget(openglWidget)
         , initialized(false)
         , render(true)
+        , viewportWidth(720)
+        , viewportHeight(576)
     {}
 
     Widget::WeakPtr openglWidget;
     bool initialized;
     bool render;
+    int viewportWidth;
+    int viewportHeight;
 };
 
 /* ---------------------------------------------------------------- *
@@ -67,6 +72,12 @@ struct Thread::Data
 Thread::Thread(Widget::WeakPtr openglWidget)
     : d(std::make_shared<Data>(openglWidget))
 {}
+
+void Thread::setViewportSize(int width, int height)
+{
+    d->viewportWidth  = width;
+    d->viewportHeight = height;
+}
 
 /* ---------------------------------------------------------------- *
    Starts the rendering thread if it is not running already.
@@ -131,14 +142,26 @@ void Thread::run()
             d->initialized = true;
         }
 
+        const float aspect =
+            float(d->viewportWidth) /
+            float(d->viewportHeight);
+
+        QMatrix4x4 projection;
+        projection.setToIdentity();
+        projection.perspective(45.0f, aspect, 0.1f, 10.0f);
+
+        QMatrix4x4 view;
+        view.setToIdentity();
+        view.translate(0.0f, 0.0f, -5.0f);
+
         // Clear the color buffer
-        glViewport(0, 0, 720, 576);
+        glViewport(0, 0, d->viewportWidth, d->viewportHeight);
         glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render the quad
         quad->update(timer.elapsed());
-        quad->render();
+        quad->render(view, projection);
 
         // Swap buffers and we're done.
         widget->swapBuffers();

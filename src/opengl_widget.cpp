@@ -6,6 +6,7 @@
 #include "opengl_widget.h"
 #include "opengl_thread.h"
 #include <iostream>
+#include <QtGui/QResizeEvent>
 
 namespace kuu
 {
@@ -83,8 +84,14 @@ void Widget::stopThread()
 /* ---------------------------------------------------------------- *
    Resize event is disabled for the rendering thread to work.
  * ---------------------------------------------------------------- */
-void Widget::resizeEvent(QResizeEvent* /*event*/)
-{}
+void Widget::resizeEvent(QResizeEvent* event)
+{
+    const QSize newSize = event->size();
+    if (d->thread)
+        d->thread->setViewportSize(
+            newSize.width(),
+            newSize.height());
+}
 
 /* ---------------------------------------------------------------- *
    Paint event is disabled for the rendering thread to work.

@@ -33,6 +33,9 @@ public:
     // Constructs the thread from the widget.
     Thread(Widget::WeakPtr openGLWidget);
 
+    // Sets the viewport size
+    void setViewportSize(int width, int height);
+
     // Starts the rendering thread.
     void start();
 
