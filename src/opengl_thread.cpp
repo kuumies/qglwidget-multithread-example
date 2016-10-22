@@ -114,7 +114,7 @@ void Thread::run()
     // Timer for rotating the quad.
     ElapsedTimer timer;
 
-    // Render untill the thread is stopped or widget is deleted.
+    // Render until the thread is stopped or widget is deleted.
     while(d->render)
     {
         // Get the widget pointer.
