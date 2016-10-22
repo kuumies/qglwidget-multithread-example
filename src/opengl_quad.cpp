@@ -38,148 +38,178 @@ struct Quad::Data
     // information.
     //
     // A simple shader is used to transform vertices from model space
-    // into clipped camera space. The shading is done with the vertex
+    // into camera clip space. The shading is done with the vertex
     // colors.
     //
     // If any of the OpenGL functions fails then the failed object
-    // is written into standard error stream.
+    // is written into standard error stream. One failure leads to
+    // rendering to fail.
     //
     void createQuad()
     {
-        // Handle quad mesh
+        // -----------------------------------------------------------
+        // Create quad vertex data. The center of the quad is at the
+        // origo. The vertex properties are packed where the first
+        // is vertes position and then color components.
+
+        const float w = width  * 0.5f;
+        const float h = height * 0.5f;
+        const std::vector<float> vertexData =
         {
-            // Create vertices
-            float w = width  * 0.5f;
-            float h = height * 0.5f;
-            const std::vector<float> vertexData =
-            {
-              // x   y   z     r     g     b
-                -w, -h, 0.0f, 1.0f, 0.0f, 0.0f,
-                 w, -h, 0.0f, 0.0f, 1.0f, 0.0f,
-                 w,  h, 0.0f, 0.0f, 0.0f, 1.0f,
-                -w,  h, 0.0f, 1.0f, 1.0f, 0.0f
-            };
+          // x   y   z     r     g     b
+            -w, -h, 0.0f, 1.0f, 0.0f, 0.0f,
+             w, -h, 0.0f, 0.0f, 1.0f, 0.0f,
+             w,  h, 0.0f, 0.0f, 0.0f, 1.0f,
+            -w,  h, 0.0f, 1.0f, 1.0f, 0.0f
+        };
 
-            // Create triangle indices
-            const std::vector<unsigned int> indexData =
-            {
-                0u, 1u, 2u,
-                2u, 3u, 0u
-            };
+        // -----------------------------------------------------------
+        // Create triangle indices (two triangles)
 
-            // Create vertex buffer object
-            glGenBuffers(1, &vbo);
-            if (vbo == 0)
-                std::cerr << "Failed to generate VBO" << std::endl;
-            glBindBuffer(GL_ARRAY_BUFFER, vbo);
-            GLint current = 0;
-            glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &current);
-            if (current != vbo)
-                std::cerr << "Failed to bind VBO" << std::endl;
-
-            glBufferData(GL_ARRAY_BUFFER,
-                         vertexData.size() * sizeof(float),
-                         &vertexData[0],
-                         GL_STATIC_DRAW);
-            glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-            // Create index buffer object
-            glGenBuffers(1, &ibo);
-            if (ibo == 0)
-                std::cerr << "Failed to generate IBO" << std::endl;
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-            glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &current);
-            if (current != ibo)
-                std::cerr << "Failed to bind IBO" << std::endl;
-            glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-                         indexData.size() * sizeof(unsigned int),
-                         &indexData[0],
-                         GL_STATIC_DRAW);
-            glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-            // Create vertex array object
-            glGenVertexArrays(1, &vao);
-            if (vao == 0)
-                std::cerr << "Failed to generate VAO" << std::endl;
-            glBindVertexArray(vao);
-            glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current);
-            if (current != vao)
-                std::cerr << "Failed to bind VAO" << std::endl;
-
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(
-                0, 3, GL_FLOAT, GL_FALSE,
-                6 * sizeof(float), (const GLvoid*) 0);
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(
-                1, 3, GL_FLOAT, GL_FALSE,
-                6 * sizeof(float),
-                (const GLvoid*) (3 * sizeof(float)));
-            glBindVertexArray(0);
-        }
-
-        // Handle quad shading
+        const std::vector<unsigned int> indexData =
         {
-            const std::string vshSource =
-                "#version 330 core "
-                "layout (location = 0) in vec3 position;"
-                "layout (location = 1) in vec3 color;"
-                "uniform mat4 cameraMatrix;"
-                "out vec4 colorIn;"
-                "void main(void)"
-                "{"
-                   " gl_Position = cameraMatrix * vec4(position, 1.0);"
-                    "colorIn = vec4(color, 1.0);"
-                "}";
+            0u, 1u, 2u,
+            2u, 3u, 0u
+        };
 
-            vsh = glCreateShader(GL_VERTEX_SHADER);
-            if (vsh == 0)
-                std::cerr << "Failed to create vertex shader"
-                          << std::endl;
-            const char* vshPtr = vshSource.c_str();
-            glShaderSource(vsh, 1, &vshPtr, 0);
-            glCompileShader(vsh);
-            GLint status = 0;
-            glGetShaderiv(vsh, GL_COMPILE_STATUS, &status);
-            if (status != GL_TRUE)
-                std::cerr << "Failed to compile vertex shader"
-                          << std::endl;
+        // -----------------------------------------------------------
+        // Create the OpenGL vertex buffer object and write the
+        // vertices into it (ID and bind statuses are asserted).
 
-            const std::string fshSource =
-                "#version 330 core "
+        glGenBuffers(1, &vbo);
+        if (vbo == 0)
+            std::cerr << "Failed to generate VBO" << std::endl;
 
-                "in vec4 colorIn;"
-                "out vec4 colorOut;"
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        GLint current = 0;
+        glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &current);
+        if (current != vbo)
+            std::cerr << "Failed to bind VBO" << std::endl;
 
-                "void main(void)"
-                "{"
-                    "colorOut = colorIn;"
-                "}";
+        glBufferData(GL_ARRAY_BUFFER,
+                     vertexData.size() * sizeof(float),
+                     &vertexData[0],
+                     GL_STATIC_DRAW);
 
-            fsh = glCreateShader(GL_FRAGMENT_SHADER);
-            if (fsh == 0)
-                std::cerr << "Failed to create fragment shader"
-                          << std::endl;
-            const char* fshPtr = fshSource.c_str();
-            glShaderSource(fsh, 1, &fshPtr, 0);
-            glCompileShader(fsh);
-            glGetShaderiv(fsh, GL_COMPILE_STATUS, &status);
-            if (status != GL_TRUE)
-                std::cerr << "Failed to compile fragment shader"
-                          << std::endl;
+        // -----------------------------------------------------------
+        // Create index buffer object and writes the indices into it.
 
-            pgm = glCreateProgram();
-            if (pgm == 0)
-                std::cerr << "Failed to create shader program"
-                          << std::endl;
-            glAttachShader(pgm, vsh);
-            glAttachShader(pgm, fsh);
-            glLinkProgram(pgm);
-            glGetProgramiv(pgm, GL_LINK_STATUS, &status);
-            if (status != GL_TRUE)
-                std::cerr << "Failed to ling shader program"
-                          << std::endl;
-        }
+        glGenBuffers(1, &ibo);
+        if (ibo == 0)
+            std::cerr << "Failed to generate IBO" << std::endl;
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
+        glGetIntegerv(GL_ELEMENT_ARRAY_BUFFER_BINDING, &current);
+        if (current != ibo)
+            std::cerr << "Failed to bind IBO" << std::endl;
+
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,
+                     indexData.size() * sizeof(unsigned int),
+                     &indexData[0],
+                     GL_STATIC_DRAW);
+
+        // -----------------------------------------------------------
+        // Create vertex array object and set the vertex attributes
+        // (position and color) definitions. The attributes will be
+        // remembered when the object is bind (note that buffer
+        // objects are still bound into OpenGL context).
+
+        glGenVertexArrays(1, &vao);
+        if (vao == 0)
+            std::cerr << "Failed to generate VAO" << std::endl;
+
+        glBindVertexArray(vao);
+        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current);
+        if (current != vao)
+            std::cerr << "Failed to bind VAO" << std::endl;
+
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(
+            0, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(float), (const GLvoid*) 0);
+
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(float),
+            (const GLvoid*) (3 * sizeof(float)));
+
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+        glBindVertexArray(0);
+
+        // -----------------------------------------------------------
+        // Create the vertex shader
+
+        const std::string vshSource =
+            "#version 330 core "
+            "layout (location = 0) in vec3 position;"
+            "layout (location = 1) in vec3 color;"
+            "uniform mat4 cameraMatrix;"
+            "out vec4 colorIn;"
+            "void main(void)"
+            "{"
+               " gl_Position = cameraMatrix * vec4(position, 1.0);"
+                "colorIn = vec4(color, 1.0);"
+            "}";
+
+        vsh = glCreateShader(GL_VERTEX_SHADER);
+        if (vsh == 0)
+            std::cerr << "Failed to create vertex shader"
+                      << std::endl;
+
+        const char* vshPtr = vshSource.c_str();
+        glShaderSource(vsh, 1, &vshPtr, 0);
+
+        glCompileShader(vsh);
+        GLint status = 0;
+        glGetShaderiv(vsh, GL_COMPILE_STATUS, &status);
+        if (status != GL_TRUE)
+            std::cerr << "Failed to compile vertex shader"
+                      << std::endl;
+
+        // -----------------------------------------------------------
+        // Create the fragment shader.
+
+        const std::string fshSource =
+            "#version 330 core "
+            "in vec4 colorIn;"
+            "out vec4 colorOut;"
+            "void main(void)"
+            "{"
+                "colorOut = colorIn;"
+            "}";
+
+        fsh = glCreateShader(GL_FRAGMENT_SHADER);
+        if (fsh == 0)
+            std::cerr << "Failed to create fragment shader"
+                      << std::endl;
+
+        const char* fshPtr = fshSource.c_str();
+        glShaderSource(fsh, 1, &fshPtr, 0);
+
+        glCompileShader(fsh);
+        glGetShaderiv(fsh, GL_COMPILE_STATUS, &status);
+        if (status != GL_TRUE)
+            std::cerr << "Failed to compile fragment shader"
+                      << std::endl;
+
+        // -----------------------------------------------------------
+        // Create the OpenGL shader program.
+
+        pgm = glCreateProgram();
+        if (pgm == 0)
+            std::cerr << "Failed to create shader program"
+                      << std::endl;
+
+        glAttachShader(pgm, vsh);
+        glAttachShader(pgm, fsh);
+
+        glLinkProgram(pgm);
+        glGetProgramiv(pgm, GL_LINK_STATUS, &status);
+        if (status != GL_TRUE)
+            std::cerr << "Failed to ling shader program"
+                      << std::endl;
     }
 
     // Destroys the quad. OpenGL resources are freed.
@@ -238,21 +268,9 @@ void Quad::render(const QMatrix4x4& view,
     glBindBuffer(GL_ARRAY_BUFFER, d->vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, d->ibo);
 
-    // ?? shouldn't the vertex array bind handle this...
-    {
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-            0, 3, GL_FLOAT, GL_FALSE,
-            6 * sizeof(float), (const GLvoid*) 0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-            1, 3, GL_FLOAT, GL_FALSE,
-            6 * sizeof(float),
-            (const GLvoid*) (3 * sizeof(float)));
-    }
-
     // Bind and validate the shader program.
     glUseProgram(d->pgm);
+
     glValidateProgram(d->pgm);
     GLint status = 0;
     glGetProgramiv(d->pgm, GL_VALIDATE_STATUS, &status);
@@ -265,10 +283,12 @@ void Quad::render(const QMatrix4x4& view,
 
     // Set the camera matrix
     const QMatrix4x4 camera = projection * view * model;
-    int uniformLocation = glGetUniformLocation(d->pgm, "cameraMatrix");
+    const int uniformLocation =
+        glGetUniformLocation(d->pgm, "cameraMatrix");
     if (uniformLocation == -1)
     {
-        std::cerr << "Failed to find cameraMatrix uniform location." << std::endl;
+        std::cerr << "Failed to find cameraMatrix uniform location."
+                  << std::endl;
         return;
     }
     glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, camera.data());
@@ -278,6 +298,8 @@ void Quad::render(const QMatrix4x4& view,
 
     // Release the binded state
     glUseProgram(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
