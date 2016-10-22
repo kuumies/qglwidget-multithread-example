@@ -184,6 +184,8 @@ void Thread::run()
         // Swap buffers and we're done.
         widget->swapBuffers();
         widget->doneCurrent();
+
+        msleep(20);
     }
 }
 
