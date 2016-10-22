@@ -13,6 +13,39 @@ namespace opengl
 {
 
 /* ---------------------------------------------------------------- *
+   A simple timer for getting the elapsed time in milliseconds.
+ * ---------------------------------------------------------------- */
+class ElapsedTimer
+{
+public:
+    // Shorthand aliases of clock
+    using Clock = std::chrono::steady_clock;
+    using ClockTimePoint = Clock::time_point;
+
+    // Constructs the elapsed timer
+    ElapsedTimer()
+    {
+        prevTime_ = Clock::now();
+    }
+
+    // Returns the elapsed time in milliseconds since the function
+    // was previously called.
+    int elapsed()
+    {
+
+        ClockTimePoint currentTime = Clock::now();
+        auto diffTime = currentTime - prevTime_;
+        prevTime_ = currentTime;
+
+        using namespace std::chrono;
+        return duration_cast<milliseconds>(diffTime).count();
+    }
+
+private:
+    ClockTimePoint prevTime_; // previous sampling time
+};
+
+/* ---------------------------------------------------------------- *
    The data of the thread.
  * ---------------------------------------------------------------- */
 struct Thread::Data
@@ -65,7 +98,10 @@ void Thread::stop()
 * ---------------------------------------------------------------- */
 void Thread::run()
 {
+    // Quad that is going to be render
     Quad::Ptr quad;
+    // Timer for rotating the quad.
+    ElapsedTimer timer;
 
     // Render untill the thread is stopped or widget is deleted.
     while(d->render)
@@ -91,7 +127,7 @@ void Thread::run()
                 return;
             }
 #endif
-            quad = std::make_shared<Quad>();
+            quad = std::make_shared<Quad>(2.0f, 2.0f);
             d->initialized = true;
         }
 
@@ -101,6 +137,7 @@ void Thread::run()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Render the quad
+        quad->update(timer.elapsed());
         quad->render();
 
         // Swap buffers and we're done.

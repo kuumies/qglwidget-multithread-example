@@ -23,6 +23,7 @@ struct Quad::Data
     Data(float width, float height)
         : width(width)
         , height(height)
+        , yaw(0.0f)
     { createQuad(); }
 
     ~Data()
@@ -37,10 +38,11 @@ struct Quad::Data
             float h = height * 0.5f;
             const std::vector<float> vertexData =
             {
-                -w, -h, 0.0f,
-                 w, -h, 0.0f,
-                 w,  h, 0.0f,
-                -w,  h, 0.0f,
+              // x   y   z     r     g     b
+                -w, -h, 0.0f, 1.0f, 0.0f, 0.0f,
+                 w, -h, 0.0f, 0.0f, 1.0f, 0.0f,
+                 w,  h, 0.0f, 0.0f, 0.0f, 1.0f,
+                -w,  h, 0.0f, 1.0f, 1.0f, 0.0f
             };
 
             // Create triangle indices
@@ -92,7 +94,12 @@ struct Quad::Data
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(
                 0, 3, GL_FLOAT, GL_FALSE,
-                3 * sizeof(float), (const GLvoid*) 0);
+                6 * sizeof(float), (const GLvoid*) 0);
+            glEnableVertexAttribArray(1);
+            glVertexAttribPointer(
+                1, 3, GL_FLOAT, GL_FALSE,
+                6 * sizeof(float),
+                (const GLvoid*) (3 * sizeof(float)));
             glBindVertexArray(0);
         }
 
@@ -101,10 +108,13 @@ struct Quad::Data
             const std::string vshSource =
                 "#version 330 core "
                 "layout (location = 0) in vec3 position;"
+                "layout (location = 1) in vec3 color;"
                 "uniform mat4 cameraMatrix;"
+                "out vec4 colorIn;"
                 "void main(void)"
                 "{"
                    " gl_Position = cameraMatrix * vec4(position, 1.0);"
+                    "colorIn = vec4(color, 1.0);"
                 "}";
 
             vsh = glCreateShader(GL_VERTEX_SHADER);
@@ -123,12 +133,12 @@ struct Quad::Data
             const std::string fshSource =
                 "#version 330 core "
 
-                "uniform vec3 color;"
+                "in vec4 colorIn;"
                 "out vec4 colorOut;"
 
                 "void main(void)"
                 "{"
-                    "colorOut = vec4(color, 1.0);"
+                    "colorOut = colorIn;"
                 "}";
 
             fsh = glCreateShader(GL_FRAGMENT_SHADER);
@@ -181,7 +191,12 @@ struct Quad::Data
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(
             0, 3, GL_FLOAT, GL_FALSE,
-            3 * sizeof(float), (const GLvoid*) 0);
+            6 * sizeof(float), (const GLvoid*) 0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(float),
+            (const GLvoid*) (3 * sizeof(float)));
 
         glUseProgram(pgm);
         glValidateProgram(pgm);
@@ -190,17 +205,7 @@ struct Quad::Data
         if (status != GL_TRUE)
             std::cout << "Shader program is not valid" << std::endl;
 
-        GLint uniformLocation = glGetUniformLocation(pgm, "color");
-        if (uniformLocation == -1)
-        {
-            std::cerr << "Failed to find color "
-                         "uniform location."
-                      << std::endl;
-            return;
-        }
-        glUniform3f(uniformLocation, 1.0f, 0.0f, 0.0f);
-
-        uniformLocation = glGetUniformLocation(pgm, "cameraMatrix");
+        int uniformLocation = glGetUniformLocation(pgm, "cameraMatrix");
         if (uniformLocation == -1)
         {
             std::cerr << "Failed to find cameraMatrix "
@@ -214,7 +219,9 @@ struct Quad::Data
         projection.perspective(45.0f, 1.0f, 0.1f, 100.0f);
         view.setToIdentity();
         view.translate(0.0f, 0.0f, -5.0f);
-        QMatrix4x4 camera = projection * view;
+        QMatrix4x4 model;
+        model.rotate(yaw, 0.0f, 1.0f, 0.0f);
+        QMatrix4x4 camera = projection * view * model;
 
         glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, camera.data());
 
@@ -235,6 +242,8 @@ struct Quad::Data
     GLuint vsh = 0;
     GLuint fsh = 0;
     GLuint pgm = 0;
+
+    float yaw = 0.0f;
 };
 
 /* ---------------------------------------------------------------- *
@@ -245,11 +254,12 @@ Quad::Quad(float width, float height)
 {}
 
 /* ---------------------------------------------------------------- *
-   Updates the quad.
+   Updates the quad rotation around Y-axis
  * -----------------------------------------------------------------*/
 void Quad::update(float elapsed)
 {
-
+    const float angleChangePerMillisecond = 100.0f/1000.0f;
+    d->yaw += (angleChangePerMillisecond * elapsed);
 }
 
 /* ---------------------------------------------------------------- *
