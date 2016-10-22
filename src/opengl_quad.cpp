@@ -20,15 +20,30 @@ namespace opengl
  * ---------------------------------------------------------------- */
 struct Quad::Data
 {
+    // Constructs the quad data
     Data(float width, float height)
         : width(width)
         , height(height)
         , yaw(0.0f)
     { createQuad(); }
 
+    // Destroys the quad data
     ~Data()
     { destroyQuad(); }
 
+    // Creates the quad. This will create a vertex buffer with two
+    // triangles where a single vertex contains position and color.
+    // The vertices and triangle indices are written into OpenGL
+    // buffers. Vertex array is used to store the vertex attribute
+    // information.
+    //
+    // A simple shader is used to transform vertices from model space
+    // into clipped camera space. The shading is done with the vertex
+    // colors.
+    //
+    // If any of the OpenGL functions fails then the failed object
+    // is written into standard error stream.
+    //
     void createQuad()
     {
         // Handle quad mesh
@@ -167,6 +182,7 @@ struct Quad::Data
         }
     }
 
+    // Destroys the quad. OpenGL resources are freed.
     void destroyQuad()
     {
         // Destroy vertex and index buffers
@@ -178,55 +194,6 @@ struct Quad::Data
         glDeleteShader(vsh);
         glDeleteShader(fsh);
         glDeleteProgram(pgm);
-    }
-
-    void drawQuad(const QMatrix4x4& view,
-                  const QMatrix4x4& projection)
-    {
-        glEnable(GL_DEPTH_TEST);
-        glDisable(GL_CULL_FACE);
-
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(
-            0, 3, GL_FLOAT, GL_FALSE,
-            6 * sizeof(float), (const GLvoid*) 0);
-        glEnableVertexAttribArray(1);
-        glVertexAttribPointer(
-            1, 3, GL_FLOAT, GL_FALSE,
-            6 * sizeof(float),
-            (const GLvoid*) (3 * sizeof(float)));
-
-        glUseProgram(pgm);
-        glValidateProgram(pgm);
-        GLint status = 0;
-        glGetProgramiv(pgm, GL_VALIDATE_STATUS, &status);
-        if (status != GL_TRUE)
-            std::cout << "Shader program is not valid" << std::endl;
-
-        int uniformLocation = glGetUniformLocation(pgm, "cameraMatrix");
-        if (uniformLocation == -1)
-        {
-            std::cerr << "Failed to find cameraMatrix "
-                         "uniform location."
-                      << std::endl;
-            return;
-        }
-
-        QMatrix4x4 model;
-        model.rotate(yaw, 0.0f, 1.0f, 0.0f);
-        QMatrix4x4 camera = projection * view * model;
-
-        glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, camera.data());
-
-        glDrawElements(
-            GL_TRIANGLES,
-            6, GL_UNSIGNED_INT, 0);
-
-        glUseProgram(0);
-        glBindVertexArray(0);
     }
 
     float width;  // width of the quad
@@ -259,12 +226,59 @@ void Quad::update(float elapsed)
 }
 
 /* ---------------------------------------------------------------- *
-   Renders the quad.
+   Renders the quad. The input view and projection matrics are
+   used to transform the vertices from world space into camera
+   clipping space.
  * -----------------------------------------------------------------*/
 void Quad::render(const QMatrix4x4& view,
                   const QMatrix4x4& projection)
 {
-    d->drawQuad(view, projection);
+    // Bind the buffers.
+    glBindVertexArray(d->vao);
+    glBindBuffer(GL_ARRAY_BUFFER, d->vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, d->ibo);
+
+    // ?? shouldn't the vertex array bind handle this...
+    {
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(
+            0, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(float), (const GLvoid*) 0);
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(
+            1, 3, GL_FLOAT, GL_FALSE,
+            6 * sizeof(float),
+            (const GLvoid*) (3 * sizeof(float)));
+    }
+
+    // Bind and validate the shader program.
+    glUseProgram(d->pgm);
+    glValidateProgram(d->pgm);
+    GLint status = 0;
+    glGetProgramiv(d->pgm, GL_VALIDATE_STATUS, &status);
+    if (status != GL_TRUE)
+        std::cout << "Shader program is not valid" << std::endl;
+
+    // Creates the transform from model space into world space
+    QMatrix4x4 model;
+    model.rotate(d->yaw, 0.0f, 1.0f, 0.0f);
+
+    // Set the camera matrix
+    const QMatrix4x4 camera = projection * view * model;
+    int uniformLocation = glGetUniformLocation(d->pgm, "cameraMatrix");
+    if (uniformLocation == -1)
+    {
+        std::cerr << "Failed to find cameraMatrix uniform location." << std::endl;
+        return;
+    }
+    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, camera.data());
+
+    // Draw the two triangles
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+    // Release the binded state
+    glUseProgram(0);
+    glBindVertexArray(0);
 }
 
 } // namespace opengl

@@ -23,6 +23,9 @@ class Widget;
 
    The thread is stopped when user calls stop() or the given in
    widget pointer goes to nullptr.
+
+   The rendering is a simple rotating quad where shading is done
+   with the vertex colors.
  * ---------------------------------------------------------------- */
 class Thread : public QThread
 {

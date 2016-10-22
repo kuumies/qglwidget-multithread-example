@@ -142,14 +142,15 @@ void Thread::run()
             d->initialized = true;
         }
 
+        // Perspective projection matrix
         const float aspect =
             float(d->viewportWidth) /
             float(d->viewportHeight);
-
         QMatrix4x4 projection;
         projection.setToIdentity();
         projection.perspective(45.0f, aspect, 0.1f, 10.0f);
 
+        // View matrix
         QMatrix4x4 view;
         view.setToIdentity();
         view.translate(0.0f, 0.0f, -5.0f);
@@ -158,6 +159,8 @@ void Thread::run()
         glViewport(0, 0, d->viewportWidth, d->viewportHeight);
         glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glEnable(GL_DEPTH_TEST);
+        glDisable(GL_CULL_FACE);
 
         // Render the quad
         quad->update(timer.elapsed());
