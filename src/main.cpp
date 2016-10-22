@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
     QGLFormat openglFormat;
     openglFormat.setVersion(3, 3);
     openglFormat.setProfile(QGLFormat::CoreProfile);
+    openglFormat.setDoubleBuffer(true);
     openglFormat.setSampleBuffers(true);
 
     // Calculate the position of the widget. The widget should be

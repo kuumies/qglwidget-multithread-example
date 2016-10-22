@@ -42,6 +42,9 @@ namespace opengl
     The rendering thread must be stopped before the widget is de-
     stroyed. The rendering thread is stopped on close event.
 
+    Issues: resizing widget cause flickering. The issue might be
+            cause by double-buffering.
+
  * ---------------------------------------------------------------- */
 class Widget
     : public QGLWidget

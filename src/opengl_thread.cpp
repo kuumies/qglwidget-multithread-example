@@ -64,6 +64,7 @@ struct Thread::Data
     bool render;
     int viewportWidth;
     int viewportHeight;
+    QMutex mutex;
 };
 
 /* ---------------------------------------------------------------- *
@@ -75,8 +76,10 @@ Thread::Thread(Widget::WeakPtr openglWidget)
 
 void Thread::setViewportSize(int width, int height)
 {
+    d->mutex.lock();
     d->viewportWidth  = width;
     d->viewportHeight = height;
+    d->mutex.unlock();
 }
 
 /* ---------------------------------------------------------------- *
@@ -96,7 +99,9 @@ void Thread::start()
  * ---------------------------------------------------------------- */
 void Thread::stop()
 {
+    d->mutex.lock();
     d->render = false;
+    d->mutex.unlock();
 
     quit();
     wait();
@@ -115,8 +120,20 @@ void Thread::run()
     ElapsedTimer timer;
 
     // Render until the thread is stopped or widget is deleted.
-    while(d->render)
+    for(;;)
     {
+        int w = 0, h = 0;
+        bool render = true;
+
+        d->mutex.lock();
+        render = d->render;
+        w = d->viewportWidth;
+        h = d->viewportHeight;
+        d->mutex.unlock();
+
+        if (!render)
+            break;
+
         // Get the widget pointer.
         Widget::Ptr widget = d->openglWidget.lock();
         if (!widget)
@@ -143,9 +160,7 @@ void Thread::run()
         }
 
         // Perspective projection matrix
-        const float aspect =
-            float(d->viewportWidth) /
-            float(d->viewportHeight);
+        const float aspect = float(w) / float(h);
         QMatrix4x4 projection;
         projection.setToIdentity();
         projection.perspective(45.0f, aspect, 0.1f, 10.0f);
@@ -156,7 +171,7 @@ void Thread::run()
         view.translate(0.0f, 0.0f, -5.0f);
 
         // Clear the color buffer
-        glViewport(0, 0, d->viewportWidth, d->viewportHeight);
+        glViewport(0, 0, w, h);
         glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glEnable(GL_DEPTH_TEST);
