@@ -31,6 +31,9 @@ find_package(Qt5Widgets REQUIRED)
 find_package(Qt5OpenGL REQUIRED)
 find_package(OpenGL REQUIRED)
 
+set(GLM_INCLUDE_DIR ${CMAKE_CURRENT_LIST_DIR}/external/glm)
+include_directories(${GLM_INCLUDE_DIR})
+
 #---------------------------------------------------------------------
 # Set sources.
 
