@@ -7,6 +7,8 @@ This is a simple example how to render into QGLWidget's surface from non-UI thre
 
 This example requires c++11 support from the compiler. The example can be build by using cmake. See examples below.
 
+### OSX
+
 **Create build directory**
 
 ```
