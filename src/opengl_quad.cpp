@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <QtGui/QMatrix4x4>
-#include <QtGui/QQuaternion>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include "opengl.h"
 
 namespace kuu
@@ -229,14 +229,14 @@ struct Quad::Data
     float width  = 1.0f; // width of the quad
     float height = 1.0f; // height of the quad
 
-    GLuint vbo = 0;      // vertex buffer object name
-    GLuint ibo = 0;      // index buffer object name
-    GLuint vao = 0;      // vertex array object name
-    GLuint vsh = 0;      // vertex shader name
-    GLuint fsh = 0;      // fragment shader name
-    GLuint pgm = 0;      // shader program name
+    GLuint vbo = 0; // vertex buffer object name
+    GLuint ibo = 0; // index buffer object name
+    GLuint vao = 0; // vertex array object name
+    GLuint vsh = 0; // vertex shader name
+    GLuint fsh = 0; // fragment shader name
+    GLuint pgm = 0; // shader program name
 
-    QQuaternion yaw;     // rotation around y-axis
+    glm::quat yaw; // rotation around y-axis
 };
 
 /* ---------------------------------------------------------------- *
@@ -253,7 +253,9 @@ void Quad::update(float elapsed)
 {
     const float angleChangePerMillisecond = 100.0f/1000.0f;
     const float angleChange = angleChangePerMillisecond * elapsed;
-    d->yaw *= QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, angleChange);
+    d->yaw *= glm::angleAxis(
+                    glm::radians(angleChange),
+                    glm::vec3(0.0f, 1.0f, 0.0f));
 }
 
 /* ---------------------------------------------------------------- *
@@ -261,8 +263,8 @@ void Quad::update(float elapsed)
    used to transform the vertices from world space into camera
    clipping space.
  * -----------------------------------------------------------------*/
-void Quad::render(const QMatrix4x4& view,
-                  const QMatrix4x4& projection)
+void Quad::render(const glm::mat4& view,
+                  const glm::mat4& projection)
 {
     // Bind the buffers.
     glBindVertexArray(d->vao);
@@ -279,11 +281,11 @@ void Quad::render(const QMatrix4x4& view,
         std::cout << "Shader program is not valid" << std::endl;
 
     // Creates the transform from model space into world space
-    QMatrix4x4 model;
-    model.rotate(d->yaw);
+    glm::mat4 model;
+    model = glm::mat4_cast(d->yaw);
 
     // Set the camera matrix
-    const QMatrix4x4 camera = projection * view * model;
+    const glm::mat4 camera = projection * view * model;
     const int uniformLocation =
         glGetUniformLocation(d->pgm, "cameraMatrix");
     if (uniformLocation == -1)
@@ -292,7 +294,8 @@ void Quad::render(const QMatrix4x4& view,
                   << std::endl;
         return;
     }
-    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE, camera.data());
+    glUniformMatrix4fv(uniformLocation, 1, GL_FALSE,
+                       glm::value_ptr(camera));
 
     // Draw the two triangles
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

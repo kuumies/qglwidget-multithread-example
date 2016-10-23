@@ -6,8 +6,7 @@
 #pragma once
 
 #include <memory>
-
-class QMatrix4x4;
+#include <glm/mat4x4.hpp>
 
 namespace kuu
 {
@@ -32,8 +31,8 @@ namespace opengl
     quad.update(10); // 10 milliseconds
     ...
     // render the quad into currently bound framebuffer.
-    QMatrix4x4 cameraViewMatrix       = getCameraViewMatrix();
-    QMatrix4x4 cameraProjectionMatrix = getCameraProjectionMatrix();
+    glm::mat4 cameraViewMatrix       = getCameraViewMatrix();
+    glm::mat4 cameraProjectionMatrix = getCameraProjectionMatrix();
     quad.render(cameraViewMatrix, cameraProjectionMatrix);
 
  * ---------------------------------------------------------------- */
@@ -50,8 +49,8 @@ public:
     void update(float elapsed);
 
     // Renders the quad
-    void render(const QMatrix4x4& view,
-                const QMatrix4x4& projection);
+    void render(const glm::mat4& view,
+                const glm::mat4& projection);
 
 private:
     struct Data;

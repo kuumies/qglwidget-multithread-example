@@ -5,7 +5,7 @@
 
 #include "opengl_thread.h"
 #include <iostream>
-#include <QtGui/QMatrix4x4>
+#include <glm/gtx/transform.hpp>
 #include "opengl_quad.h"
 
 namespace kuu
@@ -161,14 +161,14 @@ void Thread::run()
 
         // Perspective projection matrix
         const float aspect = float(w) / float(h);
-        QMatrix4x4 projection;
-        projection.setToIdentity();
-        projection.perspective(45.0f, aspect, 0.1f, 10.0f);
+        const glm::mat4 projection =
+            glm::perspective(glm::radians(45.0f),
+                             aspect, 0.1f, 10.0f);
 
         // View matrix
-        QMatrix4x4 view;
-        view.setToIdentity();
-        view.translate(0.0f, 0.0f, -5.0f);
+        const glm::mat4 view =
+            glm::translate(glm::mat4(1.0f),
+                           glm::vec3(0.0f, 0.0f, -5.0f));
 
         // Clear the color buffer
         glViewport(0, 0, w, h);
@@ -184,8 +184,6 @@ void Thread::run()
         // Swap buffers and we're done.
         widget->swapBuffers();
         widget->doneCurrent();
-
-        msleep(20);
     }
 }
 
