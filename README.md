@@ -22,7 +22,7 @@ cd build
 # find the Qt (building from Qt Creator seems to auto-
 # matically fix this). Below I have set my Qt install 
 # path.
-cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/users/kuumies/Qt5.5.1/5.5/clang_64/ ../.
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/users/kuumies/Qt5.5.1/5.5/clang_64/ -DCMAKE_INSTALL_PREFIX=install ../.
 # build
 make
 ```
