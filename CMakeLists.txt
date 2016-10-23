@@ -59,3 +59,11 @@ target_link_libraries(${PROJECT_NAME}
     ${OPENGL_LIBRARIES}
     ${GLEW_LIBRARIES}
 )
+
+#---------------------------------------------------------------------
+# Install binary and runtime to 'bin' folder
+# TODO: install Qt
+
+include(InstallRequiredSystemLibraries)
+SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
+INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
