@@ -12,19 +12,20 @@ This example requires c++11 support from the compiler. See examples below. It is
 ### OSX
 
 ```
-# clone the source
+# Clone the source
 git clone https://github.com/kuumies/qglwidget-multithread-example.git
-# create build directory
+# Create build directory
 cd qglwidget-multithread-example
 mkdir build
 cd build
-# run cmake, note that you need to tell cmake were to 
+# Run cmake, note that you need to tell cmake were to 
 # find the Qt (building from Qt Creator seems to auto-
 # matically fix this). Below I have set my Qt install 
 # path.
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/users/kuumies/Qt5.5.1/5.5/clang_64/ -DCMAKE_INSTALL_PREFIX=install ../.
-# build
-make
+# Build and install. The output binary can be found 
+# from build/install/bin directory.
+make install
 ```
 Tested with:
 
