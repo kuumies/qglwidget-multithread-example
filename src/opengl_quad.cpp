@@ -226,8 +226,8 @@ struct Quad::Data
         glDeleteProgram(pgm);
     }
 
-    float width;  // width of the quad
-    float height; // height of the quad
+    float width  = 1.0f;  // width of the quad
+    float height = 1.0f; // height of the quad
 
     GLuint vbo = 0;
     GLuint ibo = 0;
