@@ -8,19 +8,23 @@ This is a simple example how to render into QGLWidget's surface from non-UI thre
 This example requires c++11 support from the compiler. The example can be build by using cmake. See examples below.
 
 1. create build directory
+
 mkdir example
 cd example
 
 2. clone the source
+
 git clone https://github.com/kuumies/qglwidget-multithread-example.git
 
 3. run cmake
+
 mkdir build
 cd build
 cmake -DBUILD_TYPE=release ../.
 
 4. build
+
 make
 
 **issues**
-- reizing window causes flickering.
+- resizing window causes flickering.
