@@ -65,8 +65,18 @@ target_link_libraries(${PROJECT_NAME}
 
 #---------------------------------------------------------------------
 # Install binary and runtime to 'bin' folder
-# TODO: install Qt
 
 include(InstallRequiredSystemLibraries)
 set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
 install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+
+if (MSVC)
+    get_target_property(Qt5_CoreLocation Qt5::Core LOCATION)
+    install(FILES ${Qt5_CoreLocation} DESTINATION bin)
+    get_target_property(Qt5_GuiLocation Qt5::Gui LOCATION)
+    install(FILES ${Qt5_GuiLocation} DESTINATION bin)
+    get_target_property(Qt5_WidgetsLocation Qt5::Widgets LOCATION)
+    install(FILES ${Qt5_WidgetsLocation} DESTINATION bin)
+    get_target_property(Qt5_OpenGLLocation Qt5::OpenGL LOCATION)
+    install(FILES ${Qt5_OpenGLLocation} DESTINATION bin)
+endif(MSVC)
