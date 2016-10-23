@@ -9,25 +9,22 @@ This example requires c++11 support from the compiler. The example can be build 
 
 **Create build directory**
 
-mkdir example
-
-cd example
+1. mkdir example
+2. cd example
 
 **Clone the source**
 
-git clone https://github.com/kuumies/qglwidget-multithread-example.git
+1. git clone https://github.com/kuumies/qglwidget-multithread-example.git
 
 **Run cmake**
 
-mkdir build
-
-cd build
-
-cmake -DBUILD_TYPE=release ../.
+1. mkdir build
+2. cd build
+3. cmake -DBUILD_TYPE=release ../.
 
 **Build**
 
-make
+1. make
 
 ## Issues
 - resizing window causes flickering.
