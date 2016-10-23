@@ -20,7 +20,7 @@ cd example
 git clone https://github.com/kuumies/qglwidget-multithread-example.git
 ```
 
-** cmake**
+**Run cmake**
 
 ```
 mkdir build
