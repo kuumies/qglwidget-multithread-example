@@ -10,6 +10,7 @@ This example requires c++11 support from the compiler. The example can be build 
 **Create build directory**
 
 mkdir example
+
 cd example
 
 **Clone the source**
@@ -19,7 +20,9 @@ git clone https://github.com/kuumies/qglwidget-multithread-example.git
 **Run cmake**
 
 mkdir build
+
 cd build
+
 cmake -DBUILD_TYPE=release ../.
 
 **Build**
