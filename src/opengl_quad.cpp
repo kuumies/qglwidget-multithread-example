@@ -226,17 +226,17 @@ struct Quad::Data
         glDeleteProgram(pgm);
     }
 
-    float width  = 1.0f;  // width of the quad
+    float width  = 1.0f; // width of the quad
     float height = 1.0f; // height of the quad
 
-    GLuint vbo = 0;
-    GLuint ibo = 0;
-    GLuint vao = 0;
-    GLuint vsh = 0;
-    GLuint fsh = 0;
-    GLuint pgm = 0;
+    GLuint vbo = 0;      // vertex buffer object name
+    GLuint ibo = 0;      // index buffer object name
+    GLuint vao = 0;      // vertex array object name
+    GLuint vsh = 0;      // vertex shader name
+    GLuint fsh = 0;      // fragment shader name
+    GLuint pgm = 0;      // shader program name
 
-    QQuaternion yaw;
+    QQuaternion yaw;     // rotation around y-axis
 };
 
 /* ---------------------------------------------------------------- *
