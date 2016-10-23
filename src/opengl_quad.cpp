@@ -4,10 +4,11 @@
  * ---------------------------------------------------------------- */
 
 #include "opengl_quad.h"
-#include <QtGui/QMatrix4x4>
 #include <iostream>
 #include <string>
 #include <vector>
+#include <QtGui/QMatrix4x4>
+#include <QtGui/QQuaternion>
 #include "opengl.h"
 
 namespace kuu
@@ -24,7 +25,6 @@ struct Quad::Data
     Data(float width, float height)
         : width(width)
         , height(height)
-        , yaw(0.0f)
     { createQuad(); }
 
     // Destroys the quad data
@@ -236,7 +236,7 @@ struct Quad::Data
     GLuint fsh = 0;
     GLuint pgm = 0;
 
-    float yaw = 0.0f;
+    QQuaternion yaw;
 };
 
 /* ---------------------------------------------------------------- *
@@ -252,7 +252,8 @@ Quad::Quad(float width, float height)
 void Quad::update(float elapsed)
 {
     const float angleChangePerMillisecond = 100.0f/1000.0f;
-    d->yaw += (angleChangePerMillisecond * elapsed);
+    const float angleChange = angleChangePerMillisecond * elapsed;
+    d->yaw *= QQuaternion::fromAxisAndAngle(0.0f, 1.0f, 0.0f, angleChange);
 }
 
 /* ---------------------------------------------------------------- *
@@ -279,7 +280,7 @@ void Quad::render(const QMatrix4x4& view,
 
     // Creates the transform from model space into world space
     QMatrix4x4 model;
-    model.rotate(d->yaw, 0.0f, 1.0f, 0.0f);
+    model.rotate(d->yaw);
 
     // Set the camera matrix
     const QMatrix4x4 camera = projection * view * model;
