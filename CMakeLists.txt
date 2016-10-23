@@ -55,6 +55,12 @@ set(SOURCE
 # Add executable and link the needed libraries (Qt, OpenGL (+GLEW
 # on windows))
 
+if (APPLE)
+    # Set the @rpath to Qt libs path (this affects only the installed
+    # application binary)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_PREFIX_PATH}/lib")
+endif(APPLE)
+
 add_executable(${PROJECT_NAME} ${SOURCE} ${RCC_RESOURCES})
 target_link_libraries(${PROJECT_NAME}
     Qt5::Widgets
