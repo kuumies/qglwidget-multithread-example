@@ -36,5 +36,3 @@ Qt 5.5.1
 Cmake 3.4.1
 ```
 
-## Issues
-- resizing window causes flickering.
