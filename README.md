@@ -5,15 +5,15 @@ This is a simple example how to render into QGLWidget's surface from non-UI thre
 
 ## Building
 
-This example requires c++11 support from the compiler. The example can be build by using cmake. See examples below.
+This example requires c++11 support from the compiler. The example can be build by using cmake. See examples below. It is assumed that Qt 4.8 or later is installed
 
 ### OSX
 
 **Create build directory**
 
 ```
-mkdir example
-cd example
+mkdir qglwidget-multithread-example
+cd qglwidget-multithread-example
 ```
 
 **Clone the source**
