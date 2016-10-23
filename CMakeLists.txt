@@ -3,8 +3,8 @@
 #   Desc:   Main make file of the QGLWidget multi-thread example
 #---------------------------------------------------------------------
 
-PROJECT(qglwidget-multithread-example)
-CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0)
+cmake_minimum_required(VERSION 3.0.0)
+project(qglwidget-multithread-example)
 
 #---------------------------------------------------------------------
 # Setup compiler and linker to support C++ 11 etc.
@@ -43,7 +43,7 @@ QT5_ADD_RESOURCES(RCC_RESOURCES
     resource/qglwidget-multithread-example.qrc
 )
 
-SET(SOURCE
+set(SOURCE
     src/main.cpp
     src/opengl.h
     src/opengl_quad.cpp
@@ -68,5 +68,5 @@ target_link_libraries(${PROJECT_NAME}
 # TODO: install Qt
 
 include(InstallRequiredSystemLibraries)
-SET(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
-INSTALL(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
+set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION bin)
+install(TARGETS ${PROJECT_NAME} RUNTIME DESTINATION bin)
