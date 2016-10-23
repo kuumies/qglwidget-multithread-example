@@ -9,31 +9,28 @@ This example requires c++11 support from the compiler. See examples below. It is
 
 ### OSX
 
-**Create build directory**
-
 ```
-mkdir qglwidget-multithread-example
-cd qglwidget-multithread-example
-```
-
-**Clone the source**
-
-```
+# clone the source
 git clone https://github.com/kuumies/qglwidget-multithread-example.git
-```
-
-**Run cmake**
-
-```
+# create build directory
+cd qglwidget-multithread-example
 mkdir build
 cd build
-cmake -DBUILD_TYPE=release ../.
-```
-
-**Build**
-
-```
+# run cmake, note that you need to tell cmake were to 
+# find the Qt (building from Qt Creator seems to auto-
+# matically fix this). Below I have set my Qt install 
+# path.
+cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_PREFIX_PATH=/users/kuumies/Qt5.5.1/5.5/clang_64/ ../.
+# build
 make
+```
+Tested with:
+
+```
+OS X Yosemite 10.10.5
+Clang 64 bit 600.0.51
+Qt 5.5.1
+Cmake 3.4.1
 ```
 
 ## Issues
