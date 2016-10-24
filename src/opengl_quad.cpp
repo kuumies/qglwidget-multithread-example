@@ -4,6 +4,7 @@
  * ---------------------------------------------------------------- */
 
 #include "opengl_quad.h"
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -15,6 +16,30 @@ namespace kuu
 {
 namespace opengl
 {
+
+namespace
+{
+
+/* ---------------------------------------------------------------- *
+   Returns the OpenGL shader info log 
+ * ---------------------------------------------------------------- */
+std::string shaderInfoLog(GLint id)
+{
+    GLint length = 0;
+    glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+
+    if (length <= 0)
+        return std::string();
+
+    std::string log;
+    log.resize(length + 1);
+    glGetShaderInfoLog(id, length, NULL, (GLchar*)log.c_str());
+
+    log.erase(std::remove(log.begin(), log.end(), '\0'), log.end());
+    return log;
+}
+    
+} // anonymous namespace
 
 /* ---------------------------------------------------------------- *
    The data of the quad.
@@ -165,8 +190,11 @@ struct Quad::Data
         GLint status = 0;
         glGetShaderiv(vsh, GL_COMPILE_STATUS, &status);
         if (status != GL_TRUE)
+        {
             std::cerr << "Failed to compile vertex shader"
                       << std::endl;
+            std::cerr << shaderInfoLog(vsh) << std::endl;
+        }
 
         // -----------------------------------------------------------
         // Create the fragment shader.
@@ -182,8 +210,11 @@ struct Quad::Data
 
         fsh = glCreateShader(GL_FRAGMENT_SHADER);
         if (fsh == 0)
+        {
             std::cerr << "Failed to create fragment shader"
                       << std::endl;
+            std::cerr << shaderInfoLog(fsh) << std::endl;
+        }
 
         const char* fshPtr = fshSource.c_str();
         glShaderSource(fsh, 1, &fshPtr, 0);
