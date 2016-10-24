@@ -11,7 +11,7 @@ Example is based on 'Glimpsing the third dimensions' article in Qt quarterly iss
 
 ## Building
 
-This example requires c++11 support from the compiler. See examples below. It is assumed that Qt 4.8 or later and Cmake 3.0.0 or later are installed
+This example requires c++11 support from the compiler. It is assumed that Qt 4.8 or later and Cmake 3.0.0 or later are installed.
 
 ### OSX
 
