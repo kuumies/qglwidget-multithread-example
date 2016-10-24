@@ -251,7 +251,7 @@ Quad::Quad(float width, float height)
  * -----------------------------------------------------------------*/
 void Quad::update(float elapsed)
 {
-    const float angleChangePerMillisecond = 100.0f/1000.0f;
+    const float angleChangePerMillisecond = 180.0f/1000.0f;
     const float angleChange = angleChangePerMillisecond * elapsed;
     d->yaw *= glm::angleAxis(
                     glm::radians(angleChange),
