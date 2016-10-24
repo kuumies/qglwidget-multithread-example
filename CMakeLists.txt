@@ -10,7 +10,12 @@ project(qglwidget-multithread-example)
 # Setup compiler and linker to support C++ 11 etc.
 
 if(MSVC)
-    # TODO: add MSVC options...
+    IF(CMAKE_CL_64)
+        SET_PROPERTY(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS ON)
+    ENDIF(CMAKE_CL_64)
+
+    SET(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} /D_AFXDLL /EHsc /W 3 /D_CRT_SECURE_NO_WARNINGS /Zo /FS")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_AFXDLL /EHsc /W 3 /D_CRT_SECURE_NO_WARNINGS /Zo /FS")
 else(MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ggdb -g3")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
@@ -25,6 +30,7 @@ if(MSVC)
     set(GLEW_INCLUDE_DIR ${GLEW_DIR}/include/)
     set(GLEW_LIBRARIES ${GLEW_DIR}/lib/glew32.lib)
     include_directories(${GLEW_INCLUDE_DIR})
+    install(FILES ${GLEW_DIR}/bin/glew32.dll DESTINATION bin)
 endif(MSVC)
 
 find_package(Qt5Widgets REQUIRED)

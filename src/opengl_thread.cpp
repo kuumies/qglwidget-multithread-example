@@ -4,6 +4,7 @@
  * ---------------------------------------------------------------- */
 
 #include "opengl_thread.h"
+#include <chrono>
 #include <iostream>
 #include <glm/gtx/transform.hpp>
 #include "opengl_quad.h"

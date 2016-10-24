@@ -4,10 +4,10 @@
  * -----------------------------------------------------------------*/
 
 #include <QtGui/QIcon>
+#include "opengl_widget.h" // needs to be before QOpenGL* includes
 #include <QtOpengl/QGLFormat>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QDesktopWidget>
-#include "opengl_widget.h"
 
 int main(int argc, char *argv[])
 {

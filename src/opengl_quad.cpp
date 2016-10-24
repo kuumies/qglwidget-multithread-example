@@ -142,7 +142,7 @@ struct Quad::Data
         // Create the vertex shader
 
         const std::string vshSource =
-            "#version 330 core "
+            "#version 330 core \n" // note linebreak
             "layout (location = 0) in vec3 position;"
             "layout (location = 1) in vec3 color;"
             "uniform mat4 cameraMatrix;"
@@ -172,7 +172,7 @@ struct Quad::Data
         // Create the fragment shader.
 
         const std::string fshSource =
-            "#version 330 core "
+            "#version 330 core \n" // note linebreak
             "in vec4 colorIn;"
             "out vec4 colorOut;"
             "void main(void)"
