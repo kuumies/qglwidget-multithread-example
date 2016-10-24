@@ -3,7 +3,7 @@ A QGLWidget OpenGL multithread example
 
 This is a simple example how to render into QGLWidget's surface from non-UI thread. The rendering result is a basic rotating quad mesh where the shading is done with vertex colors. The example uses OpenGL 3.3 pipeline for rendering. The rendering is done using native OpenGL API, not with Qt OpenGL classes. The matrix and quaternion math is done with GLM library.
 
-Example is based on 'Glimpsing the third dimensions' article in Qt quarterly issue 4. See [Qt quarterly archive], (http://doc.qt.io/archives/qq/)
+Example is based on 'Glimpsing the third dimensions' article in Qt quarterly issue 4. See [Qt quarterly archive] (http://doc.qt.io/archives/qq/)
 
 ![Example](screenshot.gif?raw=true "Example")
 
