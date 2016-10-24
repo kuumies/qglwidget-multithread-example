@@ -39,4 +39,26 @@ Clang 64 bit 600.0.51
 Qt 5.5.1
 Cmake 3.4.1
 ```
+### Windows
 
+```
+# Clone the source
+git clone https://github.com/kuumies/qglwidget-multithread-example.git
+# Create build directory
+cd qglwidget-multithread-example
+mkdir build
+cd build
+# Run cmake, the below will create nmake makefile for release build
+cmake -G "NMake Makefiles" -DCMAKE_INSTALL_PREFIX=install -DCMAKE_BUILD_TYPE=release ../.
+# Build and install. The output binary can be found 
+# from build/install/bin directory.
+nmake install
+```
+Tested with:
+
+```
+Windows 10
+Visual Studio 2013 Express
+Qt 5.5.0
+Cmake 3.6.1
+```
