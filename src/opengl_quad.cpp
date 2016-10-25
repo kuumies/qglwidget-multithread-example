@@ -98,6 +98,19 @@ struct Quad::Data
         };
 
         // -----------------------------------------------------------
+        // Create vertex array object and bind it.
+
+        glGenVertexArrays(1, &vao);
+        if (vao == 0)
+            std::cerr << "Failed to generate VAO" << std::endl;
+
+        glBindVertexArray(vao);
+        GLint current = 0;
+        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current);
+        if (current != vao)
+            std::cerr << "Failed to bind VAO" << std::endl;
+
+        // -----------------------------------------------------------
         // Create the OpenGL vertex buffer object and write the
         // vertices into it (ID and bind statuses are asserted).
 
@@ -106,7 +119,6 @@ struct Quad::Data
             std::cerr << "Failed to generate VBO" << std::endl;
 
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        GLint current = 0;
         glGetIntegerv(GL_ARRAY_BUFFER_BINDING, &current);
         if (current != vbo)
             std::cerr << "Failed to bind VBO" << std::endl;
@@ -134,19 +146,7 @@ struct Quad::Data
                      GL_STATIC_DRAW);
 
         // -----------------------------------------------------------
-        // Create vertex array object and set the vertex attributes
-        // (position and color) definitions. The attributes will be
-        // remembered when the object is bind (note that buffer
-        // objects are still bound into OpenGL context).
-
-        glGenVertexArrays(1, &vao);
-        if (vao == 0)
-            std::cerr << "Failed to generate VAO" << std::endl;
-
-        glBindVertexArray(vao);
-        glGetIntegerv(GL_VERTEX_ARRAY_BINDING, &current);
-        if (current != vao)
-            std::cerr << "Failed to bind VAO" << std::endl;
+        // Define vertex attributes (position and color)
 
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(
@@ -159,9 +159,10 @@ struct Quad::Data
             6 * sizeof(float),
             (const GLvoid*) (3 * sizeof(float)));
 
+        // Release (notice order)
+        glBindVertexArray(0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-        glBindVertexArray(0);
 
         // -----------------------------------------------------------
         // Create the vertex shader
@@ -299,8 +300,6 @@ void Quad::render(const glm::mat4& view,
 {
     // Bind the buffers.
     glBindVertexArray(d->vao);
-    glBindBuffer(GL_ARRAY_BUFFER, d->vbo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, d->ibo);
 
     // Bind and validate the shader program.
     glUseProgram(d->pgm);
@@ -333,8 +332,6 @@ void Quad::render(const glm::mat4& view,
 
     // Release the binded state
     glUseProgram(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 }
 
